@@ -8,7 +8,6 @@
       v-bind:index="index"
       v-bind:key="index"
     />
-    {{ posts }}
   </div>
 </template>
 
