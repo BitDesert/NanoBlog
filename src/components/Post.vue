@@ -1,9 +1,7 @@
 <template>
-  <div class="col-md-12">
-    <div class="card mb-4 box-shadow">
-      <div class="card-body">
-        <p class="card-text">{{ msg }}</p>
-      </div>
+  <div class="card mb-4 box-shadow">
+    <div class="card-body">
+      <p class="card-text" v-html="msg"></p>
     </div>
   </div>
 </template>
