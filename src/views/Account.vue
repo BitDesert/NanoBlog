@@ -8,6 +8,8 @@
       v-bind:index="index"
       v-bind:key="index"
     />
+    {{status}}
+    {{cid}}
   </div>
 </template>
 
@@ -23,17 +25,66 @@ export default {
   },
   data() {
     return {
-      posts: []
+      posts: [],
+      status: "",
+      cid: "",
+      ipfs: null
     };
   },
-  mounted() {
-    axios
-      .get(
-        "https://mynano.ninja/api/accounts/" +
-          this.$route.params.account +
-          "/history"
-      )
-      .then(response => (this.posts = response.data));
+  mounted: function() {
+    this.getIpfsNodeInfo();
+  },
+  methods: {
+    async getAccountHistory() {
+      axios
+        .get(
+          "https://mynano.ninja/api/accounts/" +
+            this.$route.params.account +
+            "/history"
+        )
+        .then(response => (this.posts = response.data));
+    },
+    async getIpfsNodeInfo() {
+      try {
+        // Await for ipfs node instance.
+        const ipfs = await this.$ipfs;
+        const { id } = await ipfs.id();
+
+        // Set successful status text.
+        this.status = "Connected to IPFS via " + id;
+
+/*
+        const chunks = [];
+        for await (const chunk of ipfs.cat(
+          "QmegQpayEXbET1SX5Ks1MKVMYDHih5h3LduMzPFxxqLvqw"
+        )) {
+          console.log("CHUNK", chunk);
+
+          chunks.push(chunk);
+        }
+        console.log(Buffer.concat(chunks).toString());
+        */
+
+        const data = await ipfs.cat(
+          "QmegQpayEXbET1SX5Ks1MKVMYDHih5h3LduMzPFxxqLvqw"
+        );
+
+        // data is returned as a Buffer, conver it back to a string
+        console.log('2',data.toString());
+
+        //this.addFile()
+      } catch (err) {
+        // Set error status text.
+        this.status = `Error: ${err}`;
+      }
+    },
+    async addFile() {
+      const ipfs = await this.$ipfs;
+      const filesAdded = await ipfs.add("Hello world!");
+      console.log(filesAdded);
+
+      filesAdded.forEach(file => console.log("successfully stored", file.hash));
+    }
   }
 };
 </script>
