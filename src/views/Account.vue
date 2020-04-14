@@ -8,8 +8,6 @@
       v-bind:index="index"
       v-bind:key="index"
     />
-    {{status}}
-    {{cid}}
   </div>
 </template>
 
@@ -25,56 +23,49 @@ export default {
   },
   data() {
     return {
-      posts: [],
-      status: "",
-      cid: "",
-      ipfs: null
+      history: [],
+      posts: []
     };
   },
-  mounted: function() {
-    this.getIpfsNodeInfo();
+  mounted: async function() {
+    await this.getAccountHistory();
   },
   methods: {
     async getAccountHistory() {
       axios
         .get(
-          "https://mynano.ninja/api/accounts/" +
+          "https://api.nanocrawler.cc/v2/accounts/" +
             this.$route.params.account +
             "/history"
         )
-        .then(response => (this.posts = response.data));
+        .then(response => {
+          this.history = response.data;
+
+          var changeblocks = this.history.filter(function(post) {
+            return post.subtype == 'change';
+          });
+
+          changeblocks.forEach(block => {
+            this.getIpfsData(block.representative);
+            this.posts.push(block.representative);
+          });
+        });
     },
-    async getIpfsNodeInfo() {
+    async getIpfsData(ipfsPath) {
       try {
         // Await for ipfs node instance.
         const ipfs = await this.$ipfs;
-        const { id } = await ipfs.id();
-
-        // Set successful status text.
-        this.status = "Connected to IPFS via " + id;
 
         const chunks = [];
-        for await (const chunk of ipfs.cat(
-          "QmegQpayEXbET1SX5Ks1MKVMYDHih5h3LduMzPFxxqLvqw"
-        )) {
-          console.log("CHUNK", chunk);
-
+        for await (const chunk of ipfs.cat(ipfsPath)) {
           chunks.push(chunk);
         }
-        console.log(Buffer.concat(chunks).toString());
 
-        //this.addFile()
+        return Buffer.concat(chunks).toString();
       } catch (err) {
         // Set error status text.
-        this.status = `Error: ${err}`;
+        //console.log(err.toString());
       }
-    },
-    async addFile() {
-      const ipfs = await this.$ipfs;
-      const filesAdded = await ipfs.add("Hello world!");
-      console.log(filesAdded);
-
-      filesAdded.forEach(file => console.log("successfully stored", file.hash));
     }
   }
 };
