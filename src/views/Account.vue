@@ -53,7 +53,6 @@ export default {
         // Set successful status text.
         this.status = "Connected to IPFS via " + id;
 
-/*
         const chunks = [];
         for await (const chunk of ipfs.cat(
           "QmegQpayEXbET1SX5Ks1MKVMYDHih5h3LduMzPFxxqLvqw"
@@ -63,14 +62,6 @@ export default {
           chunks.push(chunk);
         }
         console.log(Buffer.concat(chunks).toString());
-        */
-
-        const data = await ipfs.cat(
-          "QmegQpayEXbET1SX5Ks1MKVMYDHih5h3LduMzPFxxqLvqw"
-        );
-
-        // data is returned as a Buffer, conver it back to a string
-        console.log('2',data.toString());
 
         //this.addFile()
       } catch (err) {
