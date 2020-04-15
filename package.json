@@ -17,7 +17,9 @@
     "nanocurrency": "^2.4.0",
     "vue": "^2.6.11",
     "vue-moment": "^4.1.0",
-    "vue-router": "^3.1.6"
+    "vue-router": "^3.1.6",
+    "vue-sanitize": "^0.2.0",
+    "vue-wysiwyg": "^1.7.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.3.0",

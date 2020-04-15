@@ -3,10 +3,13 @@ import App from './App.vue'
 import router from './router'
 import VueIpfs from './plugins/vue-ipfs';
 import vuemoment from 'vue-moment'
+import wysiwyg from "vue-wysiwyg";
+import VueSanitize from "vue-sanitize";
 
-// Load our IPFS plugin.
 Vue.use(VueIpfs);
 Vue.use(vuemoment);
+Vue.use(wysiwyg, {});
+Vue.use(VueSanitize);
 
 Vue.config.productionTip = false
 
