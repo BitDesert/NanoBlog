@@ -1,7 +1,7 @@
 <template>
   <div class="account">
     <h1 class="h3">{{ $route.params.account }}</h1>
-    <p class="text-center" v-if="posts.length == 0">No posts!</p>
+    <p class="text-center" v-if="posts.length == 0">{{status}}</p>
     <Post
       v-for="(post, index) in posts"
       v-bind:post="post"
@@ -18,6 +18,7 @@ import axios from "axios";
 import isIPFS from "is-ipfs";
 import bs58 from "bs58";
 import * as nanocurrency from "nanocurrency";
+import each from "async/each";
 
 export default {
   name: "Account",
@@ -26,7 +27,8 @@ export default {
   },
   data() {
     return {
-      posts: []
+      posts: [],
+      status: "Loading..."
     };
   },
   mounted: async function() {
@@ -45,22 +47,31 @@ export default {
             return block.subtype == "change";
           });
 
-          changeblocks.forEach(async block => {
-            var reppubkey = nanocurrency.derivePublicKey(block.representative);
-            var ipfshash = this.getIpfsHashFromBytes32(reppubkey);
-
-            if (!isIPFS.cid(ipfshash)) return
-            
-            var ipfsdata = await this.getIpfsData(ipfshash);
-            
-            if(ipfsdata !== false){
-              console.log(block.hash, ipfsdata);
-              
-              this.posts.push({msg: ipfsdata, timestamp: parseInt(block.timestamp)});
+          each(changeblocks, this.prepareIpfs, function(err) {
+            console.log("DONE", err);
+            if (this.posts.length == 0) {
+              this.status = "No posts found!";
             }
-        
           });
         });
+    },
+    async prepareIpfs(block, callback) {
+      var reppubkey = nanocurrency.derivePublicKey(block.representative);
+      var ipfshash = this.getIpfsHashFromBytes32(reppubkey);
+
+      if (!isIPFS.cid(ipfshash)) return;
+
+      var ipfsdata = await this.getIpfsData(ipfshash);
+
+      if (ipfsdata !== false) {
+        console.log(block.hash, ipfsdata);
+
+        this.posts.push({
+          msg: ipfsdata,
+          timestamp: parseInt(block.timestamp)
+        });
+      }
+      callback();
     },
     async getIpfsData(ipfsPath) {
       try {

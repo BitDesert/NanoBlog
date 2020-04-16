@@ -1,8 +1,10 @@
 <template>
   <div class="ipfs-info">
-    <p>{{ status }}</p>
-    <p>ID: {{ id }}</p>
-    <p>Agent version: {{ agentVersion }}</p>
+    <p>
+      {{ status }}<br>
+      ID: {{ id }}<br>
+      Agent version: {{ agentVersion }}
+    </p>
   </div>
 </template>
 

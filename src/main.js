@@ -9,7 +9,10 @@ import VueSanitize from "vue-sanitize";
 Vue.use(VueIpfs);
 Vue.use(vuemoment);
 Vue.use(wysiwyg, {});
-Vue.use(VueSanitize);
+Vue.use(VueSanitize, {
+  allowedTags: VueSanitize.defaults.allowedTags.concat([ 'img' ]),
+  allowedSchemes: [ 'data' ]
+});
 
 Vue.config.productionTip = false
 

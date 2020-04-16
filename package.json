@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "async": "^3.2.0",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
     "bs58": "^4.0.1",
@@ -15,6 +16,7 @@
     "ipfs": "^0.42.1",
     "is-ipfs": "^1.0.0",
     "nanocurrency": "^2.4.0",
+    "qrcode.vue": "^1.7.0",
     "vue": "^2.6.11",
     "vue-moment": "^4.1.0",
     "vue-router": "^3.1.6",
