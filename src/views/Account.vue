@@ -3,7 +3,7 @@
     <h1 class="h3">{{ $route.params.account }}</h1>
     <p class="text-center" v-if="posts.length == 0">{{status}}</p>
     <Post
-      v-for="(post, index) in posts"
+      v-for="(post, index) in postsSorted"
       v-bind:post="post"
       v-bind:index="index"
       v-bind:key="index"
@@ -30,6 +30,13 @@ export default {
       posts: [],
       status: "Loading..."
     };
+  },
+  computed: {
+    postsSorted() {
+      return this.posts.slice(0).sort((a,b) => {
+        return a.timestamp < b.timestamp;
+      })
+    }
   },
   mounted: async function() {
     await this.getAccountHistory();
