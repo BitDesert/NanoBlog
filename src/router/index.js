@@ -11,6 +11,11 @@ Vue.use(VueRouter)
     component: Home
   },
   {
+    path: '/ipfs',
+    name: 'IPFS',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Ipfs.vue')
+  },
+  {
     path: '/account/:account',
     name: 'Account',
     // route level code-splitting

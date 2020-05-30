@@ -38,11 +38,17 @@ export default {
       })
     }
   },
+  watch: {
+    '$route.params.account': async function () {
+      await this.getAccountHistory();
+    }
+  },
   mounted: async function() {
     await this.getAccountHistory();
   },
   methods: {
     async getAccountHistory() {
+      this.posts = []
       axios
         .get(
           "https://api.nanocrawler.cc/v2/accounts/" +
@@ -71,10 +77,17 @@ export default {
       var ipfsdata = await this.getIpfsData(ipfshash);
 
       if (ipfsdata !== false) {
-        console.log(block.hash, ipfsdata);
+        console.log(block.hash, ipfshash, ipfsdata);
+
+        try {
+          var data = JSON.parse(ipfsdata)
+        } catch (error) {
+          console.log(block.hash, ipfshash, 'Parse error');       
+          return    
+        }
 
         this.posts.push({
-          msg: ipfsdata,
+          msg: data.body,
           timestamp: parseInt(block.timestamp)
         });
       }

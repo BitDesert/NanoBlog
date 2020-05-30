@@ -1,23 +1,8 @@
 <template>
   <div class="home">
-    <h1>NanoBlog</h1>
-    <IpfsInfo />
+    <h1>📓 NanoBlog</h1>
+    <p>A blog system using the Nano cryptocurrency and IPFS</p>
     <h2>Create a new post</h2>
-    <div class="form-group" v-if="false">
-      <label for="nanoSeed">Nano Seed</label>
-      <input
-        type="text"
-        class="form-control"
-        id="nanoSeed"
-        aria-describedby="nanoSeedHelp"
-        placeholder="Leave empty if wanted"
-        v-model="seed"
-      />
-      <small
-        id="nanoSeedHelp"
-        class="form-text text-muted"
-      >We'll never share your seed with anyone else.</small>
-    </div>
     <wysiwyg v-model="post" class="mb-3" />
     <button type="button" class="btn btn-primary" v-on:click="newPost">Post</button>
     <div v-if="newRep" class="mt-3">
@@ -30,15 +15,14 @@
         </div>
       </div>
       <qrcode-vue :value="newRep" :size="200"></qrcode-vue>
-      <a :href="'newrep:' + newRep" class="btn btn-secondary">Open App</a>
+      <a :href="'nanorep:' + newRep" class="btn btn-secondary">Open App</a>
     </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import IpfsInfo from "@/components/IpfsInfo.vue";
 import QrcodeVue from "qrcode.vue";
+import axios from "axios";
 
 import bs58 from "bs58";
 import * as nanocurrency from "nanocurrency";
@@ -46,7 +30,6 @@ import * as nanocurrency from "nanocurrency";
 export default {
   name: "Home",
   components: {
-    IpfsInfo,
     QrcodeVue
   },
   data() {
@@ -63,8 +46,14 @@ export default {
 
       console.log("Adding to IPFS...");
 
+      var uploadObject = {
+        body: this.post
+      }
+
+      const uploadString = JSON.stringify(uploadObject)
+
       const resultBuffer = [];
-      for await (const result of ipfs.add(this.post)) {
+      for await (const result of ipfs.add(uploadString)) {
         resultBuffer.push(result);
       }
       var newPath = resultBuffer[0].path;
@@ -79,12 +68,27 @@ export default {
       var catresult = Buffer.concat(chunks).toString();
       console.log(catresult);
 
-      if (catresult != this.post) {
+      if (catresult != uploadString) {
         console.log("Upload got an error!");
         return;
       } else {
         console.log("Upload is ok.");
       }
+
+      // ensure it's on different providers
+      const providers = [
+        'https://ipfs.io/ipfs/',
+        'https://ipfs.2read.net/ipfs/',
+        'https://ipfs.globalupload.io/',
+        'https://hardbin.com/ipfs/',
+        'https://cloudflare-ipfs.com/ipfs/'
+      ]
+
+      providers.forEach(provider => {
+        console.log('Provider:', provider);
+        
+        axios.get(provider + newPath)
+      })
 
       console.log("Prepare address...");
 
@@ -110,7 +114,7 @@ export default {
       try {
         var successful = document.execCommand("copy");
         var msg = successful ? "successful" : "unsuccessful";
-        alert("Testing code was copied " + msg);
+        console.log("Copy was", msg);
       } catch (err) {
         alert("Oops, unable to copy");
       }
