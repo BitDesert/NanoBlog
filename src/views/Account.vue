@@ -1,6 +1,9 @@
 <template>
   <div class="account">
-    <h1 class="h3">{{ $route.params.account }}</h1>
+    <div class="d-flex">
+      <h1 class="h3 flex-grow-1">{{ $route.params.account }}</h1>
+      <qrcode-vue :value="account" :size="50"></qrcode-vue>
+    </div>
     <p class="text-center" v-if="posts.length == 0">{{status}}</p>
     <Post
       v-for="(post, index) in postsSorted"
@@ -19,14 +22,17 @@ import isIPFS from "is-ipfs";
 import bs58 from "bs58";
 import * as nanocurrency from "nanocurrency";
 import each from "async/each";
+import QrcodeVue from "qrcode.vue";
 
 export default {
   name: "Account",
   components: {
-    Post
+    Post,
+    QrcodeVue
   },
   data() {
     return {
+      account: this.$route.params.account,
       posts: [],
       status: "Loading..."
     };
