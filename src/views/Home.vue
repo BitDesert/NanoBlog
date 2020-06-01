@@ -7,7 +7,7 @@
     <button type="button" class="btn btn-primary" v-on:click="newPost">Post</button>
     <div v-if="newRep" class="mt-3">
       <h2>Successful!</h2>
-      <p>Now change your representative to:</p>
+      <p>1. Now change your representative to:</p>
       <div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="Representative" id="newRep" v-model="newRep" />
         <div class="input-group-append">
@@ -15,7 +15,8 @@
         </div>
       </div>
       <qrcode-vue :value="newRep" :size="200"></qrcode-vue>
-      <a :href="'nanorep:' + newRep" class="btn btn-secondary">Open App</a>
+      <a :href="'nanorep:' + newRep" class="btn btn-secondary mb-3">Open App</a>
+      <p>2. After that open your account by pasting your address in the search bar on top.</p>
     </div>
   </div>
 </template>
